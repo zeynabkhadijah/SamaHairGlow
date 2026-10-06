@@ -718,7 +718,6 @@ h1, h2, h3, h4 {
       <div class="eyebrow">Notre sélection</div>
       <h2>Produits phares</h2>
     </div>
-    <a href="boutique.html" class="btn btn-outline">Toute la boutique →</a>
   </div>
   <div class="products-grid" id="featured-grid"></div>
 </section>
@@ -831,18 +830,19 @@ const PRODUCTS = [
   
 
   {
-    id: "hg-08",
-    nom: "Huile ",
+    id: "hg-10",
+    nom: "Spray Capillaire",
+    type: "Spray capillaire",
     categorie: "huiles",
-    prix: 3500,
+    sansPrix: true,
     image: "ae.jpeg",
     //description: "Enrichie en avocat, cette huile limite la casse et redonne souplesse et résistance aux cheveux."
   },
   {
     id: "hg-09",
-    nom: "Huile ",
+    nom: "Huile Capillaire",
     categorie: "huiles",
-    prix: 3500,
+    sansPrix: true,
     image: "ak.jpeg",
     //description: "Enrichie en avocat, cette huile limite la casse et redonne souplesse et résistance aux cheveux."
   },
@@ -920,6 +920,22 @@ const PRODUCTS = [
     prix: 6000,
     image: "modale.jpeg",
     //description: "Voile en modal, confortable et facile d'entretien au quotidien."
+  },
+  {
+    id: "vl-10",
+    nom: "Voile Glacée",
+    categorie: "voiles",
+    prix: 5000,
+    image: "voileGlace.jpeg",
+   // description: "Voile en modal, confortable et facile d'entretien au quotidien."
+  },
+  {
+    id: "vl-11",
+    nom: "Voile Glacée",
+    categorie: "voiles",
+    prix: 5000,
+    image: "voile glace.jpeg",
+   // description: "Voile en modal, confortable et facile d'entretien au quotidien."
   }
 ];
 
@@ -1180,10 +1196,35 @@ document.addEventListener("DOMContentLoaded", updateCartBadge);
   `).join("");
 
   // Produits phares (best-sellers)
-  const featured = PRODUCTS.filter(p => p.tag === "Best-seller" || p.tag === "Nouveau").slice(0, 4);
-  document.getElementById("featured-grid").innerHTML = featured.map(renderProductCard).join("");
+  document.getElementById("featured-grid").innerHTML = PRODUCTS.map(renderProductCard).join("");
+
+  function openUsage(id) {
+    const p = PRODUCTS.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById("usage-img").src = p.image;
+    document.getElementById("usage-img").alt = "Mode d'utilisation — " + p.nom;
+    document.getElementById("usage-modal").classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+  function closeUsage() {
+    document.getElementById("usage-modal").classList.remove("open");
+    document.body.style.overflow = "";
+  }
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeUsage(); });
 
   function renderProductCard(p) {
+    if (p.sansPrix) return `
+      <div class="product-card">
+        <a href="#" class="product-thumb" onclick="event.preventDefault(); openUsage('${p.id}')">
+          <img src="${p.image}" alt="${p.nom}">
+        </a>
+        <div class="product-info">
+          <div class="product-cat">${p.type || "Huile capillaire"}</div>
+          <a href="#" onclick="event.preventDefault(); openUsage('${p.id}')"><h4>${p.nom}</h4></a>
+          <button type="button" class="usage-btn" onclick="openUsage('${p.id}')">Mode d'utilisation</button>
+        </div>
+      </div>
+    `;
     return `
       <div class="product-card">
         <a href="produit.html?id=${p.id}" class="product-thumb">
@@ -1203,6 +1244,28 @@ document.addEventListener("DOMContentLoaded", updateCartBadge);
     `;
   }
 </script>
+<div id="usage-modal" class="usage-modal" onclick="if(event.target===this) closeUsage()">
+  <button type="button" class="usage-close" onclick="closeUsage()" aria-label="Fermer">&times;</button>
+  <img id="usage-img" src="" alt="">
+</div>
+<style>
+.usage-btn {
+  margin-top: auto; align-self: flex-start; padding: 9px 16px; border-radius: 999px;
+  border: 1.5px solid var(--rose-deep); background: transparent; color: var(--rose-deep);
+  font-family: var(--font-display); font-weight: 600; font-size: 13px; cursor: pointer;
+}
+.usage-btn:hover { background: var(--rose-deep); color: #fff; }
+.usage-modal {
+  position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center;
+  background: rgba(30, 15, 10, 0.82); padding: 16px; overflow: auto;
+}
+.usage-modal.open { display: flex; }
+.usage-modal img { max-width: 100%; max-height: 94vh; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+.usage-close {
+  position: fixed; top: 12px; right: 16px; width: 40px; height: 40px; border-radius: 50%; border: none;
+  background: #fff; color: #333; font-size: 26px; line-height: 1; cursor: pointer;
+}
+</style>
 <style>
 /* ===== FOND DU SITE (image Sama Hair Glow) ===== */
 body { background: transparent; }
